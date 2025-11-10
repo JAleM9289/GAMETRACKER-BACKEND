@@ -37,7 +37,7 @@ app.use('/api/juegos', juegosRouter);
 app.use('/api/resenas', resenasRouter);
 
 
-// --- Iniciar Servidor ---
+//¨-- Iniciar Servidor ---
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
