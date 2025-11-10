@@ -2,7 +2,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 require('dotenv').config();
-
+//--- Rutas ---//
 const juegosRouter = require('./routes/juegos.js'); // Ruta de juegos
 const resenasRouter = require('./routes/resenas.js'); // <-- 1. IMPORTAMOS LAS NUEVAS RUTAS
 
