@@ -1,43 +1,48 @@
-// --- Importaciones ---
 const express = require('express');
 const mongoose = require('mongoose');
-require('dotenv').config();
-//--- Rutas ---//
-const juegosRouter = require('./routes/juegos.js'); // Ruta de juegos
-const resenasRouter = require('./routes/resenas.js'); // <-- 1. IMPORTAMOS LAS NUEVAS RUTAS
+const dotenv = require('dotenv');
+const cors = require('cors'); 
 
-// --- Inicialización ---
+// --- 1. Configuraciones
+dotenv.config(); 
+
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT || 3001; 
 
-// --- Middlewares ---
-app.use(express.json()); // Para que Express entienda JSON
+// --- 2. Importaciones de Rutas (¡CORREGIDO con los nuevos nombres de archivo!)
+// Ahora buscamos 'juegos' y 'resenas', que coinciden con los nuevos nombres
+const juegosRouter = require('./routes/juegos'); 
+const resenasRouter = require('./routes/resenas');
 
-// --- Conexión a la Base de Datos ---
-mongoose.connect(process.env.DB_URI)
-  .then(() => {
-    console.log('¡Conectado exitosamente a MongoDB Atlas!');
-  })
-  .catch((error) => {
-    console.error('Error al conectar a MongoDB:', error);
-  });
+// --- 3. Middlewares
+app.use(cors({
+    origin: 'http://localhost:5173', 
+    methods: ['GET', 'POST', 'PUT', 'DELETE']
+}));
+app.use(express.json());
 
-// --- Rutas ---
-app.get('/', (req, res) => {
-  res.send('¡Mi servidor GameTracker funciona!');
-});
-
-// Conectamos las rutas de JUEGOS
+// --- 4. Definición de Rutas (Endpoints)
+// La URL base sigue siendo /api/juegos y /api/resenas
 app.use('/api/juegos', juegosRouter);
-
-// <-- 2. CONECTAMOS LAS NUEVAS RUTAS
-// Le decimos a Express:
-// "Cualquier petición que empiece con /api/reseñas,
-// mándasela al archivo 'resenasRouter' que importamos"
 app.use('/api/resenas', resenasRouter);
 
-
-//¨-- Iniciar Servidor ---
-app.listen(PORT, () => {
-  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+// Ruta Raíz
+app.get('/', (req, res) => {
+    res.send('Gametracker está funcionando con éxito');
 });
+
+// --- 5. Conexión a la Base de Datos
+mongoose.connect(process.env.DB_URI)
+    .then(() => {
+        console.log('Conectado exitosamente a MongoDB Atlas'); // ¡Ya habíamos llegado aquí!
+
+        app.listen(PORT, () => {
+            console.log(`Servidor corriendo en http://localhost:${PORT}`);
+        });
+    })
+    .catch(error => {
+        console.error("Error al conectar a MongoDB:", error.message);
+        process.exit(1); 
+    });
+
+module.exports = app;
